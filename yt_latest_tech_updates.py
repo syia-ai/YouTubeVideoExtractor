@@ -30,7 +30,7 @@ load_dotenv()
 # Load client credentials from environment
 YOUTUBE_CLIENT_ID = os.getenv("oauth_client_id")
 YOUTUBE_CLIENT_SECRET = os.getenv("oauth_client_secret")
-# SEARCH_API_KEY = os.getenv("searchapi_key")
+SEARCH_API_KEY = os.getenv("searchapi_key")
 OPENAI_API_KEY = os.getenv("openai_key")
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"]
@@ -155,40 +155,40 @@ def get_video_details(youtube, video_id):
         "published_date": item["snippet"]["publishedAt"]
     }
 
-# def get_transcript(video_id): #This transcript extraction process uses SerpApi Key
-#     url = "https://www.searchapi.io/api/v1/search"
-#     params = {
-#         "engine": "youtube_transcripts",
-#         "api_key": SEARCH_API_KEY,
-#         "video_id": video_id
-#     }
-#     response = requests.get(url, params=params)
-#     data = response.json()
-#     transcript = " ".join([entry["text"] for entry in data.get("transcripts", [])])
-#     return transcript
-
-def get_transcript(video_id):
-
-    url = f"https://ytb2mp4.com/api/fetch-transcript?url=https://www.youtube.com/watch?v={video_id}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        try:
-            data = response.json()
-            if isinstance(data, dict) and "transcript" in data:
-                if isinstance(data["transcript"], list):
-                    transcript = " ".join([item["text"] for item in data["transcript"]])
-                elif isinstance(data["transcript"], str):
-                    transcript = data["transcript"]
-                else:
-                    transcript = "Unexpected transcript format."
-            else:
-                transcript = "Transcript key not found in API response."
-        except requests.exceptions.JSONDecodeError:
-            transcript = "Error decoding JSON. Response may not be in JSON format."
-    else:
-        transcript = f"Error fetching transcript: {response.status_code}"
-    
+def get_transcript(video_id): #This transcript extraction process uses SerpApi Key
+    url = "https://www.searchapi.io/api/v1/search"
+    params = {
+        "engine": "youtube_transcripts",
+        "api_key": SEARCH_API_KEY,
+        "video_id": video_id
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    transcript = " ".join([entry["text"] for entry in data.get("transcripts", [])])
     return transcript
+
+# def get_transcript(video_id):
+
+#     url = f"https://ytb2mp4.com/api/fetch-transcript?url=https://www.youtube.com/watch?v={video_id}"
+#     response = requests.get(url)
+#     if response.status_code == 200:
+#         try:
+#             data = response.json()
+#             if isinstance(data, dict) and "transcript" in data:
+#                 if isinstance(data["transcript"], list):
+#                     transcript = " ".join([item["text"] for item in data["transcript"]])
+#                 elif isinstance(data["transcript"], str):
+#                     transcript = data["transcript"]
+#                 else:
+#                     transcript = "Unexpected transcript format."
+#             else:
+#                 transcript = "Transcript key not found in API response."
+#         except requests.exceptions.JSONDecodeError:
+#             transcript = "Error decoding JSON. Response may not be in JSON format."
+#     else:
+#         transcript = f"Error fetching transcript: {response.status_code}"
+    
+#     return transcript
 
 def summarize_transcript(data):
 
